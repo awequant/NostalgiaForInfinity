@@ -68,7 +68,7 @@ class NostalgiaForInfinityX4(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v14.1.350"
+    return "v14.1.351"
 
   stoploss = -0.99
 
@@ -17377,10 +17377,10 @@ class NostalgiaForInfinityX4(IStrategy):
       if sell_amount > min_stake:
         grind_profit = 0.0
         self.dp.send_msg(
-          f"Rebuy de-risk [{trade.pair}] | Rate: {exit_rate} | Stake amount: {sell_amount} | Profit (stake): {profit_stake} | Profit: {(profit_ratio * 100.0):.2f}%"
+          f"De-risk [{trade.pair}] | Rate: {exit_rate} | Stake amount: {sell_amount} | Profit (stake): {profit_stake} | Profit: {(profit_ratio * 100.0):.2f}%"
         )
         log.info(
-          f"Rebuy de-risk [{current_time}] [{trade.pair}] | Rate: {exit_rate} | Stake amount: {sell_amount} | Profit (stake): {profit_stake} | Profit: {(profit_ratio * 100.0):.2f}%"
+          f"De-risk [{current_time}] [{trade.pair}] | Rate: {exit_rate} | Stake amount: {sell_amount} | Profit (stake): {profit_stake} | Profit: {(profit_ratio * 100.0):.2f}%"
         )
         return -sell_amount, "d", is_derisk
 
@@ -26942,6 +26942,16 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["cti_20_4h"] < 0.5)
         | (df["rsi_14_4h"] < 60.0)
         | (df["rsi_14_max_6_4h"] < 70.0)
+        | (df["ema_200_dec_4_1d"] == False)
+      )
+      & (
+        (df["change_pct_1h"] > -0.02)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["cti_20_4h"] < 0.5)
+        | (df["rsi_14_4h"] < 70.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] < df["res_hlevel_4h"])
         | (df["ema_200_dec_4_1d"] == False)
       )
     )
