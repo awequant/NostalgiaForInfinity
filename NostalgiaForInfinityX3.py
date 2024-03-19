@@ -68,7 +68,7 @@ class NostalgiaForInfinityX3(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v13.1.369"
+    return "v13.1.372"
 
   stoploss = -0.99
 
@@ -37189,10 +37189,28 @@ class NostalgiaForInfinityX3(IStrategy):
           long_entry_logic.append(
             (df["change_pct_4h"] > -0.01)
             | (df["change_pct_4h"].shift(48) < 0.03)
+            | (df["rsi_14_1h"] < 40.0)
+            | (df["rsi_14_4h"] < 40.0)
+            | (df["rsi_14_1d"] < 40.0)
             | (df["r_480_1h"] > -75.0)
             | (df["r_480_4h"] > -75.0)
             | (df["ema_200_dec_48_1h"] == False)
             | (df["ema_200_dec_4_1d"] == False)
+          )
+          long_entry_logic.append(
+            (df["not_downtrend_4h"])
+            | (df["rsi_14_1h"] < 40.0)
+            | (df["rsi_14_4h"] < 40.0)
+            | (df["rsi_14_1d"] < 50.0)
+            | (df["close"] > (df["high_max_12_1d"] * 0.60))
+          )
+          long_entry_logic.append(
+            (df["not_downtrend_1h"])
+            | (df["not_downtrend_4h"])
+            | (df["rsi_14_1h"] < 40.0)
+            | (df["rsi_14_4h"] < 40.0)
+            | (df["close"] > df["sup_level_1h"])
+            | (df["close"] > df["sup_level_4h"])
           )
 
           # Logic
