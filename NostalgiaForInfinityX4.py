@@ -68,7 +68,7 @@ class NostalgiaForInfinityX4(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v14.1.390"
+    return "v14.1.393"
 
   stoploss = -0.99
 
@@ -16115,11 +16115,11 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.84))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and self.long_grind_buy(last_candle, previous_candle, slice_profit)
       ):
@@ -16241,11 +16241,11 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.84))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and (
           (last_candle["rsi_3_15m"] > 20.0)
@@ -16373,14 +16373,14 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.84))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and (
-          (last_candle["rsi_3"] > 12.0)
+          (last_candle["rsi_3"] > 26.0)
           and (last_candle["rsi_3_15m"] > 30.0)
           and (last_candle["rsi_3_1h"] > 30.0)
           and (last_candle["rsi_3_4h"] > 30.0)
@@ -16505,14 +16505,14 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.84))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and (
-          (last_candle["rsi_3"] > 12.0)
+          (last_candle["rsi_3"] > 26.0)
           and (last_candle["rsi_3_15m"] > 30.0)
           and (last_candle["rsi_3_1h"] > 30.0)
           and (last_candle["rsi_3_4h"] > 30.0)
@@ -17169,9 +17169,9 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
           and (last_candle["close"] > (last_candle["high_max_6_1d"] * 0.86))
           and (last_candle["close"] > (last_candle["high_max_12_1d"] * 0.84))
           and (last_candle["btc_pct_close_max_72_5m"] < 0.03)
@@ -17232,11 +17232,11 @@ class NostalgiaForInfinityX4(IStrategy):
           (last_candle["rsi_3_15m"] > 20.0) and (last_candle["rsi_3_1h"] > 26.0) and (last_candle["rsi_3_4h"] > 26.0)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.76))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and self.long_grind_buy(last_candle, previous_candle, slice_profit)
       ):
@@ -17308,11 +17308,11 @@ class NostalgiaForInfinityX4(IStrategy):
           (last_candle["rsi_3_15m"] > 20.0) and (last_candle["rsi_3_1h"] > 26.0) and (last_candle["rsi_3_4h"] > 26.0)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.76))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and self.long_grind_buy(last_candle, previous_candle, slice_profit)
       ):
@@ -17381,11 +17381,11 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.76))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and (
           (last_candle["rsi_3"] > 12.0)
@@ -17460,11 +17460,11 @@ class NostalgiaForInfinityX4(IStrategy):
           and (last_candle["global_protections_long_dump"] == True)
         )
         and (
-          (last_candle["close"] > (last_candle["close_max_12"] * 0.92))
-          and (last_candle["close"] > (last_candle["close_max_24"] * 0.90))
-          and (last_candle["close"] > (last_candle["close_max_48"] * 0.88))
-          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.86))
-          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.76))
+          (last_candle["close"] > (last_candle["close_max_12"] * 0.94))
+          and (last_candle["close"] > (last_candle["close_max_24"] * 0.92))
+          and (last_candle["close"] > (last_candle["close_max_48"] * 0.90))
+          and (last_candle["close"] > (last_candle["high_max_24_1h"] * 0.88))
+          and (last_candle["close"] > (last_candle["high_max_48_1h"] * 0.86))
         )
         and (
           (last_candle["rsi_3"] > 12.0)
@@ -31492,6 +31492,16 @@ class NostalgiaForInfinityX4(IStrategy):
             | (df["close"] > df["sup_level_1h"])
             | (df["close"] > df["sup_level_4h"])
             | (df["close"] > df["sup_level_1d"])
+          )
+          long_entry_logic.append(
+            (df["rsi_14"] > df["rsi_14"].shift(12))
+            | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+            | (df["rsi_3"] > 26.0)
+            | (df["rsi_3_15m"] > 26.0)
+            | (df["r_480_1h"] < -20.0)
+            | (df["r_480_4h"] < -20.0)
+            | (df["close"] > df["sup_level_1h"])
+            | (df["close"] > df["sup_level_4h"])
           )
 
           # Logic
