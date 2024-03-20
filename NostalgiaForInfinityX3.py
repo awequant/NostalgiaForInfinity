@@ -68,7 +68,7 @@ class NostalgiaForInfinityX3(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v13.1.373"
+    return "v13.1.378"
 
   stoploss = -0.99
 
@@ -17521,7 +17521,7 @@ class NostalgiaForInfinityX3(IStrategy):
       slice_amount
       * (
         (self.regular_mode_derisk_futures if self.is_futures_mode else self.regular_mode_derisk_spot)
-        if (trade.open_date_utc.replace(tzinfo=None) >= datetime(2024, 3, 20) or is_backtest)
+        if (trade.open_date_utc.replace(tzinfo=None) >= datetime(2024, 3, 19) or is_backtest)
         else (self.regular_mode_derisk_futures_old if self.is_futures_mode else self.regular_mode_derisk_spot_old)
       )
       / (trade.leverage if self.is_futures_mode else 1.0)
@@ -27198,6 +27198,55 @@ class NostalgiaForInfinityX3(IStrategy):
         | (df["close"] > df["sup_level_1h"])
         | (df["close"] > df["sup_level_4h"])
         | (df["close"] < df["res_hlevel_1d"])
+      )
+      & (
+        (df["not_downtrend_1h"])
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 26.0)
+        | (df["rsi_3_1h"] > 26.0)
+        | (df["cti_20_4h"] < 0.5)
+        | (df["rsi_14_4h"] < 50.0)
+        | (df["r_480_4h"] > -85.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["ema_200_dec_48_1h"] == False)
+        | (df["ema_200_dec_24_4h"] == False)
+      )
+      & (
+        (df["not_downtrend_15m"])
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 30.0)
+        | (df["cti_20_4h"] < 0.5)
+        | (df["rsi_14_4h"] < 50.0)
+        | (df["rsi_14_max_6_4h"] < 70.0)
+        | (df["r_480_4h"] > -80.0)
+        | (df["close"] > df["sup_level_1h"])
+      )
+      & (
+        (df["change_pct_1d"] < 0.10)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_14_1h"] < 40.0)
+        | (df["rsi_14_4h"] < 40.0)
+        | (df["cti_20_1d"] < 0.7)
+        | (df["rsi_14_1d"] < 50.0)
+        | (df["rsi_14_max_6_1d"] < 70.0)
+        | (df["r_480_4h"] > -75.0)
+        | (df["close"] > df["sup_level_4h"])
+        | (df["close"] > (df["high_max_6_1d"] * 0.65))
+      )
+      & (
+        (df["change_pct_4h"] < 0.03)
+        | (df["top_wick_pct_4h"] < 0.03)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 10.0)
+        | (df["rsi_14_1h"] < 50.0)
+        | (df["rsi_14_4h"] < 60.0)
+        | (df["close"] < df["res_hlevel_4h"])
+        | (df["ema_200_dec_24_4h"] == False)
+        | (df["ema_200_dec_4_1d"] == False)
       )
     )
 
