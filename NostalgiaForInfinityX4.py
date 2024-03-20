@@ -68,7 +68,7 @@ class NostalgiaForInfinityX4(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v14.1.387"
+    return "v14.1.388"
 
   stoploss = -0.99
 
@@ -1777,6 +1777,8 @@ class NostalgiaForInfinityX4(IStrategy):
     elif self.config["exchange"]["name"] in ["bybit"]:
       self.startup_candle_count = 199
     elif self.config["exchange"]["name"] in ["bitget"]:
+      self.startup_candle_count = 499
+    elif self.config["exchange"]["name"] in ["bingx"]:
       self.startup_candle_count = 499
 
     if ("trading_mode" in self.config) and (self.config["trading_mode"] in ["futures", "margin"]):
@@ -31469,6 +31471,15 @@ class NostalgiaForInfinityX4(IStrategy):
             | (df["rsi_14"] > df["rsi_14"].shift(12))
             | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
             | (df["close"] > (df["high_max_24_1h"] * 0.75))
+          )
+          long_entry_logic.append(
+            (df["not_downtrend_1h"])
+            | (df["not_downtrend_4h"])
+            | (df["rsi_14"] > df["rsi_14"].shift(12))
+            | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+            | (df["close"] > df["sup_level_1h"])
+            | (df["close"] > df["sup_level_4h"])
+            | (df["close"] > df["sup_level_1d"])
           )
 
           # Logic
