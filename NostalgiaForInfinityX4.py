@@ -68,7 +68,7 @@ class NostalgiaForInfinityX4(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v14.1.394"
+    return "v14.1.399"
 
   stoploss = -0.99
 
@@ -16043,6 +16043,10 @@ class NostalgiaForInfinityX4(IStrategy):
           sell_amount = first_entry.safe_filled * exit_rate / (trade.leverage if self.is_futures_mode else 1.0) - (
             min_stake * 1.5
           )
+          if (current_stake_amount - sell_amount) < (min_stake * 1.5):
+            sell_amount = (trade.amount * exit_rate / (trade.leverage if self.is_futures_mode else 1.0)) - (
+              min_stake * 1.5
+            )
           if sell_amount > min_stake:
             grind_profit = (exit_rate - first_entry.safe_price) / first_entry.safe_price
             coin_amount = sell_amount / exit_rate
@@ -16065,7 +16069,9 @@ class NostalgiaForInfinityX4(IStrategy):
           if self.is_futures_mode
           else self.grind_mode_first_entry_stop_threshold_spot
         ):
-          sell_amount = first_entry.safe_filled * exit_rate / (trade.leverage if self.is_futures_mode else 1.0)
+          sell_amount = first_entry.safe_filled * exit_rate / (trade.leverage if self.is_futures_mode else 1.0) - (
+            min_stake * 1.5
+          )
           if (current_stake_amount - sell_amount) < (min_stake * 1.5):
             sell_amount = (trade.amount * exit_rate / (trade.leverage if self.is_futures_mode else 1.0)) - (
               min_stake * 1.5
@@ -26490,6 +26496,30 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["close"] < df["res_hlevel_4h"])
         | (df["close"] < df["res_hlevel_1d"])
       )
+      & (
+        (df["change_pct_1d"] < 0.26)
+        | (df["change_pct_4h"] < 0.04)
+        | (df["top_wick_pct_4h"] < 0.04)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3"] > 12.0)
+        | (df["rsi_14_1h"] < 50.0)
+        | (df["cti_20_4h"] < 0.5)
+        | (df["rsi_14_4h"] < 60.0)
+        | (df["cti_20_1d"] < 0.7)
+        | (df["rsi_14_1d"] < 70.0)
+        | (df["close"] < df["res_hlevel_1d"])
+      )
+      & (
+        (df["change_pct_4h"] > -0.01)
+        | (df["change_pct_4h"].shift(48) < 0.16)
+        | (df["top_wick_pct_4h"].shift(48) < 0.08)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 26.0)
+        | (df["rsi_14_1h"] < 60.0)
+        | (df["rsi_14_4h"] < 70.0)
+      )
     )
 
     df["global_protections_long_dump"] = (
@@ -31517,6 +31547,14 @@ class NostalgiaForInfinityX4(IStrategy):
             | (df["r_480_4h"] < -20.0)
             | (df["close"] > df["sup_level_1h"])
             | (df["close"] > df["sup_level_4h"])
+          )
+          long_entry_logic.append(
+            (df["rsi_14"] > df["rsi_14"].shift(12))
+            | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+            | (df["rsi_3"] > 12.0)
+            | (df["rsi_3_15m"] > 12.0)
+            | (df["rsi_14_1h"] < 60.0)
+            | (df["rsi_14_4h"] < 65.0)
           )
 
           # Logic
@@ -37416,6 +37454,15 @@ class NostalgiaForInfinityX4(IStrategy):
             | (df["r_480_1h"] < -35.0)
             | (df["r_480_4h"] < -35.0)
             | (df["close"] > df["sup_level_1h"])
+          )
+          long_entry_logic.append(
+            (df["not_downtrend_1h"])
+            | (df["not_downtrend_4h"])
+            | (df["rsi_14"] > df["rsi_14"].shift(12))
+            | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+            | (df["close"] > df["sup_level_4h"])
+            | (df["close"] > df["sup_level_1d"])
+            | (df["ema_200_dec_48_1h"] == False)
           )
 
           # Logic
