@@ -68,7 +68,7 @@ class NostalgiaForInfinityX3(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v13.1.402"
+    return "v13.1.404"
 
   stoploss = -0.99
 
@@ -481,7 +481,7 @@ class NostalgiaForInfinityX3(IStrategy):
     [-0.03, -0.10, -0.12, -0.14, -0.16, -0.18],
   ]
   regular_mode_grind_4_profit_threshold_spot = 0.018
-  regular_mode_derisk_spot = -0.20
+  regular_mode_derisk_spot = -0.30
   regular_mode_derisk_spot_old = -0.80
 
   regular_mode_rebuy_stakes_futures = [
@@ -26545,6 +26545,26 @@ class NostalgiaForInfinityX3(IStrategy):
         | (df["cti_20_4h"] < 0.5)
         | (df["rsi_14_4h"] < 50.0)
         | (df["close"] < df["res_hlevel_4h"])
+      )
+      & (
+        (df["not_downtrend_1h"])
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 10.0)
+        | (df["rsi_3_1h"] > 12.0)
+        | (df["cti_20_1d"] < 0.8)
+        | (df["rsi_14_1d"] < 70.0)
+      )
+      & (
+        (df["change_pct_4h"] > -0.02)
+        | (df["change_pct_4h"].shift(48) < 0.08)
+        | (df["not_downtrend_1h"])
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_14_4h"] < 50.0)
+        | (df["rsi_14_1d"] < 60.0)
+        | (df["rsi_14_max_6_1d"] < 80.0)
+        | (df["close"] > (df["high_max_48_1h"] * 0.80))
+        | (df["hl_pct_change_6_1d"] < 1.0)
       )
     )
 
