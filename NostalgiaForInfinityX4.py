@@ -68,7 +68,7 @@ class NostalgiaForInfinityX4(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v14.1.462"
+    return "v14.1.465"
 
   stoploss = -0.99
 
@@ -27465,6 +27465,16 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["close"] > (df["high_max_6_1h"] * 0.75))
         | (df["hl_pct_change_6_1d"] < 1.0)
       )
+      & (
+        (df["not_downtrend_15m"])
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3"] > 8.0)
+        | (df["rsi_3_15m"] > 8.0)
+        | (df["rsi_14_4h"] < 70.0)
+        | (df["r_480_4h"] < -25.0)
+        | (df["close"] < df["res_hlevel_4h"])
+      )
     )
 
     df["global_protections_long_dump"] = (
@@ -28516,6 +28526,19 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["close"] > df["sup_level_4h"])
         | (df["ema_200_dec_24_4h"] == False)
         | (df["ema_200_dec_4_1d"] == False)
+      )
+      & (
+        (df["change_pct_1h"] > -0.01)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 8.0)
+        | (df["rsi_14_1h"] < 40.0)
+        | (df["rsi_14_4h"] < 50.0)
+        | (df["rsi_14_1d"] < 50.0)
+        | (df["r_480_1h"] < -30.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] > df["sup_level_4h"])
+        | (df["close"] > df["sup_level_1d"])
       )
     )
 
@@ -38769,6 +38792,15 @@ class NostalgiaForInfinityX4(IStrategy):
             | (df["close"] > df["sup_level_1d"])
             | (df["ema_200_dec_4_1d"] == False)
             | (df["hl_pct_change_6_1d"] > 0.20)
+          )
+          long_entry_logic.append(
+            (df["rsi_14_1h"] < 40.0)
+            | (df["rsi_14_4h"] < 40.0)
+            | (df["rsi_14_1d"] < 40.0)
+            | (df["rsi_14"] > df["rsi_14"].shift(12))
+            | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+            | (df["r_480_4h"] > -75.0)
+            | (df["ema_200_dec_4_1d"] == False)
           )
 
           # Logic
