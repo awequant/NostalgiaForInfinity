@@ -68,7 +68,7 @@ class NostalgiaForInfinityX3(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v13.1.486"
+    return "v13.1.494"
 
   stoploss = -0.99
 
@@ -109,7 +109,7 @@ class NostalgiaForInfinityX3(IStrategy):
   startup_candle_count: int = 800
 
   # Long Normal mode tags
-  long_normal_mode_tags = ["force_entry", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
+  long_normal_mode_tags = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
   # Long Pump mode tags
   long_pump_mode_tags = ["21", "22", "23", "24", "25", "26"]
   # Long Quick mode tags
@@ -145,6 +145,8 @@ class NostalgiaForInfinityX3(IStrategy):
   short_mode_tags = ["581", "582"]
   # Short rapid mode tags
   short_rapid_mode_tags = ["601", "602", "603", "604", "605", "606", "607", "608", "609", "610"]
+  # Short grind mode tags
+  short_grind_mode_tags = ["620"]
 
   short_normal_mode_name = "short_normal"
   short_pump_mode_name = "short_pump"
@@ -554,7 +556,7 @@ class NostalgiaForInfinityX3(IStrategy):
     [-0.03, -0.10, -0.12, -0.14, -0.16, -0.18],
   ]
   regular_mode_grind_5_profit_threshold_spot = 0.048
-  regular_mode_derisk_spot = -0.30
+  regular_mode_derisk_spot = -0.40
   regular_mode_derisk_spot_old = -0.80
 
   regular_mode_rebuy_stakes_futures = [
@@ -15436,17 +15438,26 @@ class NostalgiaForInfinityX3(IStrategy):
     for entry in filled_entries:
       entry_stake = entry.safe_filled * entry.safe_price * (1 + trade.fee_open)
       total_stake += entry_stake
-      total_profit -= entry_stake
+      if trade.is_short:
+        total_profit += entry_stake
+      else:
+        total_profit -= entry_stake
     for exit in filled_exits:
       exit_stake = exit.safe_filled * exit.safe_price * (1 - trade.fee_close)
-      total_profit += exit_stake
+      if trade.is_short:
+        total_profit -= exit_stake
+      else:
+        total_profit += exit_stake
     current_stake = trade.amount * exit_rate * (1 - trade.fee_close)
     if self.is_futures_mode:
       if trade.is_short:
         current_stake -= trade.funding_fees
       else:
         current_stake += trade.funding_fees
-    total_profit += current_stake
+    if trade.is_short:
+      total_profit -= current_stake
+    else:
+      total_profit += current_stake
     total_profit_ratio = total_profit / total_stake
     current_profit_ratio = total_profit / current_stake
     init_profit_ratio = total_profit / filled_entries[0].cost
@@ -15827,7 +15838,7 @@ class NostalgiaForInfinityX3(IStrategy):
       if sell and (signal_name is not None):
         return f"{signal_name} ( {enter_tag})"
 
-    # Trades not opened by X3
+    # Trades not opened by X4
     if not trade.is_short and (
       not any(
         c
@@ -15845,6 +15856,47 @@ class NostalgiaForInfinityX3(IStrategy):
     ):
       # use normal mode for such trades
       sell, signal_name = self.long_exit_normal(
+        pair,
+        current_rate,
+        profit_stake,
+        profit_ratio,
+        profit_current_stake_ratio,
+        profit_init_ratio,
+        max_profit,
+        max_loss,
+        filled_entries,
+        filled_exits,
+        last_candle,
+        previous_candle_1,
+        previous_candle_2,
+        previous_candle_3,
+        previous_candle_4,
+        previous_candle_5,
+        trade,
+        current_time,
+        enter_tags,
+      )
+      if sell and (signal_name is not None):
+        return f"{signal_name} ( {enter_tag})"
+
+    # Trades not opened by X4
+    if trade.is_short and (
+      not any(
+        c
+        in (
+          self.short_normal_mode_tags
+          + self.short_pump_mode_tags
+          + self.short_quick_mode_tags
+          + self.short_rebuy_mode_tags
+          + self.short_mode_tags
+          + self.short_rapid_mode_tags
+          + self.short_grind_mode_tags
+        )
+        for c in enter_tags
+      )
+    ):
+      # use normal mode for such trades
+      sell, signal_name = self.short_exit_normal(
         pair,
         current_rate,
         profit_stake,
@@ -27552,6 +27604,32 @@ class NostalgiaForInfinityX3(IStrategy):
         | (df["close"] > (df["high_max_12_1h"] * 0.75))
         | (df["hl_pct_change_24_1h"] < 0.5)
       )
+      & (
+        (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3"] > 10.0)
+        | (df["rsi_3_15m"] > 20.0)
+        | (df["rsi_14_1h"] < 40.0)
+        | (df["cti_20_4h"] < 0.7)
+        | (df["rsi_14_4h"] < 50.0)
+        | (df["r_480_1h"] < -35.0)
+        | (df["r_480_4h"] < -25.0)
+        | (df["close"] > df["sup_level_1h"])
+      )
+      & (
+        (df["change_pct_1d"] < 0.01)
+        | (df["change_pct_4h"] < 0.01)
+        | (df["change_pct_1h"] > -0.01)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_3_15m"] > 30.0)
+        | (df["cti_20_4h"] < 0.7)
+        | (df["rsi_14_4h"] < 60.0)
+        | (df["r_480_4h"] < -15.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] > df["sup_level_4h"])
+        | (df["close"] > df["sup_level_1d"])
+      )
     )
 
     df["global_protections_long_dump"] = (
@@ -28681,6 +28759,35 @@ class NostalgiaForInfinityX3(IStrategy):
         | (df["close"] > df["sup_level_1h"])
         | (df["close"] > df["sup_level_4h"])
         | (df["ema_200_dec_48_1h"] == False)
+      )
+      & (
+        (df["change_pct_1d"] < 0.04)
+        | (df["change_pct_4h"] < 0.02)
+        | (df["change_pct_1h"] > -0.01)
+        | (df["top_wick_pct_1h"] < 0.01)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_14_15m"] < 33.0)
+        | (df["rsi_14_1h"] < 50.0)
+        | (df["cti_20_4h"] < 0.5)
+        | (df["rsi_14_4h"] < 60.0)
+        | (df["rsi_14_1d"] < 50.0)
+        | (df["close"] > df["bb20_2_low_15m"])
+        | (df["close"] > df["bb20_2_low_1h"])
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] < df["res_hlevel_4h"])
+      )
+      & (
+        (df["change_pct_4h"] < 0.04)
+        | (df["top_wick_pct_4h"] < 0.04)
+        | (df["rsi_14"] > df["rsi_14"].shift(12))
+        | (df["rsi_14_15m"] > df["rsi_14_15m"].shift(12))
+        | (df["rsi_14_1h"] < 50.0)
+        | (df["cti_20_4h"] < 0.5)
+        | (df["rsi_14_4h"] < 60.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] < df["res_hlevel_4h"])
+        | (df["close"] > (df["high_max_12_1d"] * 0.70))
       )
     )
 
@@ -39002,6 +39109,16 @@ class NostalgiaForInfinityX3(IStrategy):
             | (df["close"] > df["sup_level_1h"])
             | (df["ema_200_dec_4_1d"] == False)
           )
+          long_entry_logic.append(
+            (df["change_pct_4h"] < 0.02)
+            | (df["top_wick_pct_4h"] < 0.02)
+            | (df["rsi_14_1h"] < 50.0)
+            | (df["cti_20_4h"] < 0.8)
+            | (df["rsi_14_4h"] < 60.0)
+            | (df["close"] < df["res_hlevel_1h"])
+            | (df["close"] < df["res_hlevel_4h"])
+            | (df["close"] < df["res_hlevel_1d"])
+          )
 
           # Logic
           long_entry_logic.append(df["rsi_14"] < self.entry_46_rsi_14_max.value)
@@ -39742,7 +39859,7 @@ class NostalgiaForInfinityX3(IStrategy):
             long_entry_logic.append(df["not_downtrend_1d"])
 
           # Logic
-          long_entry_logic.append(df["rsi_14"] < self.entry_46_rsi_14_max.value)
+          long_entry_logic.append(df["rsi_14"] < self.entry_102_rsi_14_max.value)
           long_entry_logic.append(df["close"] < (df["ema_16"] * self.entry_102_ema_offset.value))
           long_entry_logic.append(df["close"] < (df["bb20_2_low"] * self.entry_102_bb_offset.value))
 
