@@ -53,11 +53,12 @@ warnings.simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 ##                                                                                                         ##
 ##  Binance: https://accounts.binance.com/en/register?ref=C68K26A9 (20% discount on trading fees)          ##
 ##  Kucoin: https://www.kucoin.com/r/af/QBSSS5J2 (20% lifetime discount on trading fees)                   ##
-##  Gate.io: https://www.gate.io/signup/UAARUlhf/20pct?ref_type=103 (20% lifetime discount on trading fees)##
+##  Gate.io: https://www.gate.io/signup/UAARUlhf/2130?ref_type=103 (20% lifetime discount on trading fees) ##
 ##  OKX: https://www.okx.com/join/11749725931 (20% discount on trading fees)                               ##
-##  MEXC: https://promote.mexc.com/a/nfi  (10% discount on trading fees)                                   ##
+##  MEXC: https://www.mexc.com/register?inviteCode=mexc-1b888 (10% discount on trading fees)               ##
 ##  ByBit: https://partner.bybit.com/b/nfi                                                                 ##
 ##  Bitget: https://bonus.bitget.com/nfi (lifetime 20% rebate all & 10% discount on spot fees)             ##
+##  BitMart: https://www.bitmart.com/invite/nfinfinity/en-US (20% lifetime discount on trading fees)       ##
 ##  HTX: https://www.htx.com/invite/en-us/1f?invite_code=ubpt2223                                          ##
 ##         (Welcome Bonus worth 241 USDT upon completion of a deposit and trade)                           ##
 ##  Bitvavo: https://account.bitvavo.com/create?a=D22103A4BC (no fees for the first € 1000)                ##
@@ -68,7 +69,7 @@ class NostalgiaForInfinityX4(IStrategy):
   INTERFACE_VERSION = 3
 
   def version(self) -> str:
-    return "v14.2.4"
+    return "v14.2.9"
 
   stoploss = -0.99
 
@@ -12730,6 +12731,19 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["close"] < df["res_hlevel_1d"])
         | (df["hl_pct_change_6_1d"] < 0.9)
       )
+      & (
+        (df["not_downtrend_1h"])
+        | (df["rsi_3_1h"] > 15.0)
+        | (df["rsi_3_4h"] > 15.0)
+        | (df["rsi_14_4h"] < 30.0)
+        | (df["rsi_14_max_6_4h"] < 65.0)
+        | (df["rsi_14_1d"] < 40.0)
+        | (df["rsi_14_max_6_1d"] < 65.0)
+        | (df["r_14_1h"] > -90.0)
+        | (df["r_14_4h"] > -90.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] > df["sup_level_4h"])
+      )
     )
 
     df["global_protections_long_dump"] = (
@@ -15602,6 +15616,27 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["r_14_4h"] > -75.0)
         | (df["close"] > df["sup_level_1h"])
       )
+      & (
+        (df["change_pct_1d"] > -0.05)
+        | (df["not_downtrend_1h"])
+        | (df["not_downtrend_4h"])
+        | (df["rsi_3_15m"] > 20.0)
+        | (df["rsi_3_1h"] > 25.0)
+        | (df["r_14_1h"] > -90.0)
+        | (df["r_14_4h"] > -75.0)
+        | (df["close"] > df["sup_level_1h"])
+        | (df["close"] > df["sup_level_4h"])
+      )
+      & (
+        (df["change_pct_1d"] > -0.04)
+        | (df["change_pct_4h"] > -0.01)
+        | (df["change_pct_4h"].shift(48) < 0.01)
+        | (df["not_downtrend_1h"])
+        | (df["rsi_14_4h"] < 40.0)
+        | (df["rsi_14_1d"] < 50.0)
+        | (df["r_480_1h"] < -35.0)
+        | (df["close"] > df["sup_level_1h"])
+      )
     )
 
     # Global protections
@@ -16438,6 +16473,15 @@ class NostalgiaForInfinityX4(IStrategy):
         | (df["close"] < df["res_hlevel_4h"])
         | (df["close"] < df["res_hlevel_1d"])
       )
+      & (
+        (df["change_pct_1d"] < 0.10)
+        | (df["rsi_3"] < 80.0)
+        | (df["rsi_3_15m"] < 80.0)
+        | (df["rsi_3_1h"] < 80.0)
+        | (df["close"] < df["res_hlevel_1h"])
+        | (df["close"] < df["res_hlevel_4h"])
+        | (df["close"] < df["res_hlevel_1d"])
+      )
     )
 
     df["global_protections_short_dump"] = (
@@ -16750,6 +16794,15 @@ class NostalgiaForInfinityX4(IStrategy):
     elif all(c in self.long_grind_mode_tags for c in enter_tags):
       return self.futures_mode_leverage_grind_mode
     return self.futures_mode_leverage
+
+  # Correct Min Stake
+  # ---------------------------------------------------------------------------------------------
+  def correct_min_stake(self, min_stake: float) -> float:
+    if self.config["exchange"]["name"] in ["bybit"]:
+      if self.is_futures_mode:
+        if min_stake < 5.0:
+          min_stake = 5.0
+    return min_stake
 
   # Set Profit Target
   # ---------------------------------------------------------------------------------------------
@@ -31237,6 +31290,7 @@ class NostalgiaForInfinityX4(IStrategy):
     **kwargs,
   ):
     is_backtest = self.dp.runmode.value in ["backtest", "hyperopt"]
+    min_stake = self.correct_min_stake(min_stake)
     # min/max stakes include leverage. The return amounts is before leverage.
     min_stake /= trade.leverage
     max_stake /= trade.leverage
@@ -35227,6 +35281,7 @@ class NostalgiaForInfinityX4(IStrategy):
     current_exit_profit: float,
     **kwargs,
   ) -> Optional[float]:
+    min_stake = self.correct_min_stake(min_stake)
     # min/max stakes include leverage. The return amounts is before leverage.
     min_stake /= trade.leverage
     max_stake /= trade.leverage
@@ -42434,6 +42489,7 @@ class NostalgiaForInfinityX4(IStrategy):
     **kwargs,
   ):
     is_backtest = self.dp.runmode.value in ["backtest", "hyperopt"]
+    min_stake = self.correct_min_stake(min_stake)
     # min/max stakes include leverage. The return amounts is before leverage.
     min_stake /= trade.leverage
     max_stake /= trade.leverage
@@ -46152,6 +46208,7 @@ class NostalgiaForInfinityX4(IStrategy):
     current_exit_profit: float,
     **kwargs,
   ) -> Optional[float]:
+    min_stake = self.correct_min_stake(min_stake)
     # min/max stakes include leverage. The return amounts is before leverage.
     min_stake /= trade.leverage
     max_stake /= trade.leverage

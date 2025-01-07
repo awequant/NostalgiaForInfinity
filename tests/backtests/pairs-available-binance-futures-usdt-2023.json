@@ -34,7 +34,6 @@
       "EDU/USDT:USDT",
       "ETHW/USDT:USDT",
       "FET/USDT:USDT",
-      "FRONT/USDT:USDT",
       "FXS/USDT:USDT",
       "GAS/USDT:USDT",
       "GLMR/USDT:USDT",
@@ -74,7 +73,6 @@
       "RAD/USDT:USDT",
       "RDNT/USDT:USDT",
       "RIF/USDT:USDT",
-      "RNDR/USDT:USDT",
       "SEI/USDT:USDT",
       "SLP/USDT:USDT",
       "SNT/USDT:USDT",
@@ -92,7 +90,6 @@
       "TRU/USDT:USDT",
       "TWT/USDT:USDT",
       "UMA/USDT:USDT",
-      "USDC/USDT:USDT",
       "WAXP/USDT:USDT",
       "WLD/USDT:USDT",
       "XVG/USDT:USDT",
@@ -100,7 +97,11 @@
       "YGG/USDT:USDT"
     ]
   },
-  "pairlists": [{ "method": "StaticPairList" }],
+  "pairlists": [
+    {
+      "method": "StaticPairList"
+    }
+  ],
   "entry_pricing": {
     "use_order_book": true,
     "order_book_top": 1,
